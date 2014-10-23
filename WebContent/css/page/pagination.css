@@ -1,0 +1,48 @@
+@charset "utf-8";
+
+.pagination a {
+	text-decoration: none;
+	border: 1px solid #CDCDCD;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	color: #000;
+	background: #CDCDCD;
+}
+
+.pagination a,.pagination span {
+	display: inline-block;
+	padding: 0.1em 0.4em;
+	margin-right: 5px;
+	margin-bottom: 5px;
+}
+
+.pagination .current {
+	background: #525252;
+	color: #fff;
+	border: 1px solid #CDCDCD;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.pagination .current.prev,.pagination .current.next {
+	color: #fff;
+	border-color: #CDCDCD;
+	background: #CDCDCD;
+}
+
+.projectList {
+	height: 360px;
+}
+
+.projectItem {
+	margin-left: 20px;
+	margin-bottom: 5px;
+}
+
+.projectA {
+	font-size: 14px;
+	text-decoration: none;
+	font-weight: 700;
+}

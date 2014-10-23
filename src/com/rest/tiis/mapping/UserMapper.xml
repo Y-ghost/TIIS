@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rest.tiis.mapping.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.rest.tiis.beans.User" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="loginName" property="loginname" jdbcType="VARCHAR" />
+    <result column="passWord" property="password" jdbcType="VARCHAR" />
+    <result column="userName" property="username" jdbcType="VARCHAR" />
+    <result column="role" property="role" jdbcType="INTEGER" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="webSite" property="website" jdbcType="VARCHAR" />
+    <result column="createUser" property="createuser" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="modifyUser" property="modifyuser" jdbcType="INTEGER" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+    <result column="right_content" property="rightContent" jdbcType="VARCHAR" />
+    <result column="validCode" property="validcode" jdbcType="VARCHAR" />
+    <result column="outDate" property="outdate" jdbcType="TIMESTAMP" />
+    <result column="clientID" property="clientid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, loginName, passWord, userName, role, email, phone, address, webSite, createUser, 
+    createTime, modifyUser, modifyTime, right_content, validCode, outDate, clientID
+  </sql>
+  <!-- 根据用户id查询用户信息 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from User
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <!-- 根据用户名查询用户信息 -->
+  <select id="selectByUserName" resultMap="BaseResultMap" parameterType="String" >
+  	select 
+    <include refid="Base_Column_List" />
+    from User
+    where loginName = #{userName,jdbcType=VARCHAR}
+  </select>
+  <!-- 用户信息注册 -->
+  <insert id="register" parameterType="com.rest.tiis.beans.User" >
+  	insert into User (loginName, passWord, 
+      userName, role, email, 
+      phone, address, webSite, 
+      createUser, createTime, modifyUser, 
+      modifyTime, right_content, validCode, outDate)
+    values (#{loginname,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{username,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{website,jdbcType=VARCHAR}, 
+      #{createuser,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, #{modifyuser,jdbcType=INTEGER}, 
+      #{modifytime,jdbcType=TIMESTAMP}, #{rightContent,jdbcType=VARCHAR}, #{validcode,jdbcType=VARCHAR}, 
+      #{outdate,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 查询所有用户数 -->
+  <select id="selectAllUserCounts" resultType="Integer" parameterType="Map" >
+    select count(*)
+    from User
+    <if test="userID != null and userID != ''">
+    	where id = #{userID}
+    </if>
+  </select>
+  <!-- 分页查询用户信息 -->
+  <select id="selectAllUserPages" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from User
+    <if test="userID != null and userID != ''">
+    	where id = #{userID}
+    </if>
+    order by createTime desc limit #{index,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+  </select>
+  <!-- 查询所有用户信息 -->
+  <select id="selectAllUser" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from User
+    order by createTime desc 
+  </select>
+  <!-- 查询用户个人信息 -->
+  <select id="selectUserById" resultMap="BaseResultMap" parameterType="Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from User
+    where id = #{id,jdbcType=INTEGER} 
+  </select>
+  
+  <!-- 根据主机id查询用户信息 -->
+  <select id="selectUserByHostCode" resultMap="BaseResultMap" parameterType="String" >
+    select u.*
+    from User u 
+	left join UserProjectRel up on u.id = up.userId
+	left join Project p on up.projectid = p.id 
+	left join ControlHost c on c.projectId = p.id
+	where c.code = #{hostCode,jdbcType=VARCHAR} 
+  </select>
+  <!-- 更新用户信息 -->
+  <update id="update" parameterType="com.rest.tiis.beans.User" >
+    update User
+    set loginName = #{loginname,jdbcType=VARCHAR},
+      passWord = #{password,jdbcType=VARCHAR},
+      userName = #{username,jdbcType=VARCHAR},
+      role = #{role,jdbcType=INTEGER},
+      email = #{email,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      webSite = #{website,jdbcType=VARCHAR},
+      createUser = #{createuser,jdbcType=INTEGER},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      modifyUser = #{modifyuser,jdbcType=INTEGER},
+      modifyTime = #{modifytime,jdbcType=TIMESTAMP},
+      right_content = #{rightContent,jdbcType=VARCHAR},
+      validCode = #{validcode,jdbcType=VARCHAR},
+      outDate = #{outdate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 更新用户clientID信息 -->
+  <update id="updateClientID" parameterType="com.rest.tiis.beans.User" >
+    update User
+    set clientID = #{clientid,jdbcType=VARCHAR}
+    where loginName = #{loginname,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 删除单个用户信息 -->
+  <delete id="deleteUserById" parameterType="Integer">
+  	delete from User
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+</mapper>

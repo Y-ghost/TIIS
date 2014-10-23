@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rest.tiis.mapping.EquipmentMapper" >
+  <resultMap id="BaseResultMap" type="com.rest.tiis.beans.Equipment" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+     <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="controlHostId" property="controlhostid" jdbcType="INTEGER" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="createUser" property="createuser" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="modifyUser" property="modifyuser" jdbcType="INTEGER" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+    <result column="flowParameter" property="flowparameter" jdbcType="INTEGER" />
+    
+    <association property="project" column="controlHostId" select="selectProjectByHostId"></association>
+  </resultMap>
+  
+  <!-- 映射关联项目 -->
+  <resultMap id="projectMap" type="com.rest.tiis.beans.Project" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="DOUBLE" />
+    <result column="department" property="department" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="county" property="county" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="createUser" property="createuser" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="modifyUser" property="modifyuser" jdbcType="INTEGER" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, name, controlHostId, code, createUser, createTime, modifyUser, modifyTime, flowParameter
+  </sql>
+  <!-- 查询关联项目 -->
+  <select id="selectProjectByHostId" resultMap="projectMap">
+  	select project.* from project 
+  	left join ControlHost on project.id = ControlHost.projectId
+  	where ControlHost.id = #{controlHostId}
+  </select>
+  
+  <!-- 管理员查询所有节点信息 -->
+  <select id="selectAllEquipment" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from equipment
+  </select>
+  <!-- 普通用户查询个人的所有节点信息 -->
+  <select id="selectAllEquipmentByUser" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select e.*
+	from equipment e
+	left join ControlHost c on e.controlHostId = c.id
+	left join Project p on c.projectId = p.id
+	left join UserProjectRel u on u.projectid = p.id 
+	where userId = #{id,jdbcType=INTEGER}
+  </select>
+  <!-- 根据节点id查询所有节点信息 -->
+  <select id="selectEquipmentById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select * from equipment 
+    where id = #{equipmentId,jdbcType=INTEGER};
+  </select>
+  <!-- 根据主机Id和节点code查询节点信息 -->
+  <select id="selectEquipmentByhIdAndEcode" resultMap="BaseResultMap" parameterType="Map">
+    select * from equipment 
+    where controlHostId = #{hId} and code = #{eCode};
+  </select>
+  <!-- 根据项目id查询所有节点信息 -->
+  <select id="selectEquipmentByProjectId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select * from equipment as emt 
+    left join ControlHost as ch on emt.controlHostId=ch.id 
+    where ch.projectId = #{projectId,jdbcType=INTEGER};
+  </select>
+  <!--  添加新的节点信息 -->
+  <insert id="addAllEquipment" parameterType="java.util.List" >
+    <![CDATA[ 
+	    insert into Equipment ( name, controlHostId, 
+	      code, createUser, createTime, 
+	      modifyUser, modifyTime, flowParameter)
+	    values 
+    ]]>  
+    <foreach collection="list" item="item" index="index" separator="," > 
+	    ( #{item.name,jdbcType=VARCHAR}, #{item.controlhostid,jdbcType=INTEGER}, 
+	      #{item.code,jdbcType=VARCHAR}, #{item.createuser,jdbcType=INTEGER}, #{item.createtime,jdbcType=TIMESTAMP}, 
+	      #{item.modifyuser,jdbcType=INTEGER}, #{item.modifytime,jdbcType=TIMESTAMP}, #{item.flowparameter,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+ 
+  <!-- 根据项目id删除所有节点信息 -->
+  <delete id="deleteEquipment" parameterType="java.lang.Integer">
+    delete emt from equipment as emt 
+    left join ControlHost as ch on emt.controlHostId=ch.id 
+    where ch.projectId = #{pId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 根据主机id删除所有节点信息 -->
+  <delete id="deleteEquipmentByHostId" parameterType="java.lang.Integer">
+    delete emt from equipment as emt 
+    left join ControlHost as ch on emt.controlHostId=ch.id 
+    where ch.id = #{hId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 根据节点id删除所有节点信息 -->
+  <delete id="deleteEquipmentByEquipmentId" parameterType="java.lang.Integer">
+    delete emt from equipment as emt 
+    where emt.id = #{eId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 管理员查询节点数 -->
+  <select id="selectAllEquipmentCounts" resultType="Integer" parameterType="Map">
+    select count(*)
+    from equipment e
+    <if test="projectID != null and projectID != ''">
+    	left join ControlHost c on e.controlHostId = c.id 
+    	where c.projectId = #{projectID}
+    </if>
+  </select>
+  
+  <!-- 普通用户查询节点数 -->
+  <select id="selectAllEquipmentCountsByUser" resultType="Integer" parameterType="Map">
+    select count(*)
+	from equipment e
+	left join ControlHost c on e.controlHostId = c.id
+	left join Project p on c.projectId = p.id
+	left join UserProjectRel u on u.projectid = p.id 
+	where userId = #{id,jdbcType=INTEGER}
+	<if test="projectID != null and projectID != ''">
+    	and c.projectId = #{projectID}
+    </if>
+  </select>
+  
+  <!-- 管理员查询分页主机信息 -->
+  <select id="selectAllEquipmentPages" resultMap="BaseResultMap" parameterType="Map">
+    select *
+    from equipment e
+    <if test="projectID != null and projectID != ''">
+    	left join ControlHost c on e.controlHostId = c.id 
+    	where c.projectId = #{projectID}
+    </if>
+    order by e.createTime desc limit #{index,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 普通用户查询分页主机信息 -->
+  <select id="selectAllEquipmentPagesByUser" resultMap="BaseResultMap" parameterType="Map">
+    select e.*
+    from equipment e
+	left join ControlHost c on e.controlHostId = c.id
+	left join Project p on c.projectId = p.id
+	left join UserProjectRel u on u.projectid = p.id 
+	where u.userId = #{id,jdbcType=INTEGER}
+	<if test="projectID != null and projectID != ''">
+    	and p.id = #{projectID}
+    </if>
+    order by e.createTime desc limit #{index,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 用于校验修改的节点名和地址是否唯一 -->
+  <select id="validOtherEquipmentNameAndCode" resultMap="BaseResultMap" parameterType="Map">
+    select e.*
+    from equipment e
+	where id <![CDATA[ != ]]> #{id,jdbcType=INTEGER}
+	and controlHostId = #{controlHostId,jdbcType=VARCHAR}
+	and (name = #{name,jdbcType=VARCHAR}
+	or code = #{code,jdbcType=VARCHAR}) limit 1
+  </select>
+  
+  <!-- 修改节点信息 -->
+  <update id="modifyEquipment" parameterType="com.rest.tiis.beans.Equipment" >
+    update Equipment
+    set name = #{name,jdbcType=VARCHAR},
+      controlHostId = #{controlhostid,jdbcType=INTEGER},
+      code = #{code,jdbcType=VARCHAR},
+      modifyUser = #{modifyuser,jdbcType=INTEGER},
+      modifyTime = #{modifytime,jdbcType=TIMESTAMP},
+      flowParameter = #{flowparameter,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

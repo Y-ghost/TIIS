@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rest.tiis.mapping.UserProjectRelMapper" >
+  <resultMap id="BaseResultMap" type="com.rest.tiis.beans.UserProjectRel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="userId" property="userid" jdbcType="INTEGER" />
+    <result column="projectId" property="projectid" jdbcType="INTEGER" />
+    <result column="createUser" property="createuser" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="modifyUser" property="modifyuser" jdbcType="INTEGER" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, userId, projectId, createUser, createTime, modifyUser, modifyTime
+  </sql>
+  <!-- 删除用户项目关联 -->
+  <delete id="deleteUserProjectR" parameterType="java.lang.Integer" >
+    delete from UserProjectRel
+    where projectId = #{pId,jdbcType=INTEGER}
+  </delete>
+  <!-- 添加用户项目关联信息 -->
+  <insert id="insert" parameterType="com.rest.tiis.beans.UserProjectRel" >
+    insert into UserProjectRel (userId, projectId, 
+      createUser, createTime, modifyUser, 
+      modifyTime)
+    values ( #{userid,jdbcType=INTEGER}, #{projectid,jdbcType=INTEGER}, 
+      #{createuser,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, #{modifyuser,jdbcType=INTEGER}, 
+      #{modifytime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <select id="selectRelBypId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select * from UserProjectRel 
+  	where projectId = #{id,jdbcType=INTEGER}
+  </select>
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rest.tiis.mapping.SystemLogMapper">
+	<resultMap id="BaseResultMap" type="com.rest.tiis.beans.SystemLog">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="userId" property="userid" jdbcType="INTEGER" />
+		<result column="logContext" property="logcontext" jdbcType="VARCHAR" />
+		<result column="logType" property="logtype" jdbcType="INTEGER" />
+		<result column="logTime" property="logtime" jdbcType="TIMESTAMP" />
+		<result column="logStatus" property="logstatus" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, userId, logContext, logType, logTime, logStatus
+	</sql>
+	
+	<!-- 管理员查询分页报警信息 -->
+  <select id="selectAllMessagePages" resultMap="BaseResultMap" parameterType="Map">
+    select *
+    from SystemLog 
+    <trim prefix="WHERE" prefixOverrides="AND|OR">    
+	    <if test="type != null and type != ''">
+	    	logType = #{type}
+	    </if>
+		<if test="status != null and status != '' ">    
+			and logStatus = #{status}    
+		</if>    
+    </trim>  
+    order by logStatus , logTime desc limit #{index,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 普通用户查询分页报警信息 -->
+  <select id="selectAllMessagePagesByUser" resultMap="BaseResultMap" parameterType="Map">
+    select *
+    from SystemLog 
+    where userId = #{id}
+    <if test="type != null and type != ''">
+    	and logType = #{type}
+    </if>
+    <if test="status != null and status != '' ">    
+		and logStatus = #{status}    
+	</if> 
+    order by logStatus , logTime desc limit #{index,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+  </select>
+  
+   
+  <!-- 管理员查询报警信息数 -->
+  <select id="selectAllMessageCounts" resultType="Integer" parameterType="Map">
+    select count(*)
+    from SystemLog
+    <trim prefix="WHERE" prefixOverrides="AND|OR">    
+	    <if test="type != null and type != ''">
+	    	logType = #{type}
+	    </if>
+		<if test="status != null and status != '' ">    
+			and logStatus = #{status}    
+		</if>    
+    </trim>
+  </select>
+  
+  <!-- 普通用户查询报警信息数 -->
+  <select id="selectAllMessageCountsByUser" resultType="Integer" parameterType="Map">
+    select count(*)
+    from SystemLog 
+    where userId = #{id}
+    <if test="type != null and type != ''">
+    	and logType = #{type}
+    </if>
+    <if test="status != null and status != '' ">    
+		and logStatus = #{status}    
+	</if>
+  </select>
+  
+  <!-- 根据id查询报警信息 -->
+  <select id="selectMessageById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select *
+    from SystemLog 
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 标记为已读 -->
+  <update id="markSystemLog" parameterType="java.lang.Integer" >
+    update SystemLog
+    set logStatus = '1'
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+	<!-- 删除用户下的所有日志信息 -->
+	<delete id="deleteSystemLogByUserId" parameterType="java.lang.Integer">
+		delete from SystemLog
+		where userId = #{userId,jdbcType=INTEGER}
+	</delete>
+	<!-- 批量插入系统日志 -->
+	<insert id="insert" parameterType="java.util.List">
+	  	<![CDATA[
+		  	insert into SystemLog (userId, logContext, logType, logTime, logStatus)
+		    values
+		]]>
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.userid}, #{item.logcontext}, #{item.logtype},
+			#{item.logtime},#{item.logstatus})
+		</foreach>
+	</insert>
+</mapper>

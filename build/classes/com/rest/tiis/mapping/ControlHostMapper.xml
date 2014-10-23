@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rest.tiis.mapping.ControlHostMapper" >
+  <resultMap id="BaseResultMap" type="com.rest.tiis.beans.ControlHost" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="projectId" property="projectid" jdbcType="INTEGER" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="createUser" property="createuser" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="modifyUser" property="modifyuser" jdbcType="INTEGER" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+    
+    <association property="project" column="projectId" select="selectProjectById"></association>
+  </resultMap>
+  
+  <!-- 映射关联项目 -->
+  <resultMap id="projectMap" type="com.rest.tiis.beans.Project" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="DOUBLE" />
+    <result column="department" property="department" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="county" property="county" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="createUser" property="createuser" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="modifyUser" property="modifyuser" jdbcType="INTEGER" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, projectId, code, createUser, createTime, modifyUser, modifyTime
+  </sql>
+  
+  <!-- 查询关联项目 -->
+  <select id="selectProjectById" resultMap="projectMap">
+  	select * from project where id = #{projectId}
+  </select>
+  <!-- 根据项目id查询主机信息 -->
+  <select id="selectByProjectId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ControlHost
+    where projectId = #{projectId,jdbcType=INTEGER}
+  </select>
+  <!-- 根据主机id查询主机信息 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ControlHost
+    where id = #{controlhostid,jdbcType=INTEGER}
+  </select>
+  <!-- 根据主机编号查询主机信息 -->
+  <select id="selectHostByCode" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from ControlHost
+    where code = #{hostCode,jdbcType=VARCHAR}
+  </select>
+  <!-- 根据主机id和编号查询主机信息 -->
+  <select id="selectHostByIdAndCode" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from ControlHost
+    where id <![CDATA[ != ]]> #{id,jdbcType=INTEGER} and code = #{code,jdbcType=VARCHAR}
+  </select>
+  <!-- 添加新主机 -->
+  <insert id="addHost" parameterType="com.rest.tiis.beans.ControlHost">
+  	insert into ControlHost (projectId, code, 
+      createUser, createTime, modifyUser, 
+      modifyTime)
+    values (#{projectid,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, 
+      #{createuser,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, #{modifyuser,jdbcType=INTEGER}, 
+      #{modifytime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 根据项目id删除主机 -->
+  <delete id="deleteControlHost" parameterType="java.lang.Integer">
+  	delete from ControlHost 
+	where projectId = #{pId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 根据主机id删除主机 -->
+  <delete id="deleteHostById" parameterType="java.lang.Integer">
+  	delete from ControlHost 
+	where id = #{hId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 管理员查询主机数 -->
+  <select id="selectAllHostCounts" resultType="Integer" parameterType="Map">
+    select count(*)
+    from ControlHost
+    <if test="projectID != null and projectID != ''">
+    	where projectId = #{projectID}
+    </if>
+  </select>
+  
+  <!-- 普通用户查询主机数 -->
+  <select id="selectAllHostCountsByUser" resultType="Integer" parameterType="Map">
+    select count(*)
+    from ControlHost where projectId in (select projectId from UserProjectRel where userId = #{id})
+    <if test="projectID != null and projectID != ''">
+    	and projectId = #{projectID}
+    </if>
+  </select>
+  
+  <!-- 管理员查询分页主机信息 -->
+  <select id="selectAllHostPages" resultMap="BaseResultMap" parameterType="Map">
+    select *
+    from ControlHost 
+    <if test="projectID != null and projectID != ''">
+    	where projectId = #{projectID}
+    </if>
+    order by createTime desc limit #{index,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 普通用户查询分页主机信息 -->
+  <select id="selectAllHostPagesByUser" resultMap="BaseResultMap" parameterType="Map">
+    select *
+    from ControlHost 
+    where projectId in (select projectId from UserProjectRel where userId = #{id,jdbcType=INTEGER})
+    <if test="projectID != null and projectID != ''">
+    	and projectId = #{projectID}
+    </if>
+    order by createTime desc limit #{index,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 修改主机信息 -->
+  <update id="modifyHost" parameterType="com.rest.tiis.beans.ControlHost" >
+    update ControlHost
+    set projectId = #{projectid,jdbcType=INTEGER},
+      code = #{code,jdbcType=VARCHAR},
+      modifyUser = #{modifyuser,jdbcType=INTEGER},
+      modifyTime = #{modifytime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

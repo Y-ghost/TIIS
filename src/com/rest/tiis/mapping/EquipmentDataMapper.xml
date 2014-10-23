@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rest.tiis.mapping.EquipmentDataMapper" >
+  <resultMap id="BaseResultMap" type="com.rest.tiis.beans.EquipmentData" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="equipmentId" property="equipmentid" jdbcType="INTEGER" />
+    <result column="times" property="times" jdbcType="DECIMAL" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, equipmentId, times, createTime
+  </sql>
+  
+  <!-- 根据项目id删除节点采集的数据 -->
+  <delete id="deleteEquipmentData" parameterType="java.lang.Integer" >
+    delete ed from Equipment_Data  ed
+    left join equipment e on ed.equipmentId = e.id
+    left join ControlHost c on e.controlHostId = c.id
+    where c.projectId = #{pId,jdbcType=INTEGER};
+  </delete>
+  
+  <!-- 根据主机id删除节点采集的数据 -->
+  <delete id="deleteEquipmentDataByHostId" parameterType="java.lang.Integer" >
+    delete ed from Equipment_Data  ed
+    left join equipment e on ed.equipmentId = e.id
+    left join ControlHost c on e.controlHostId = c.id
+    where c.id = #{hId,jdbcType=INTEGER};
+  </delete>
+  
+  <!-- 根据节点id删除节点采集的数据 -->
+  <delete id="deleteEquipmentDataByEquipmentId" parameterType="java.lang.Integer" >
+    delete ed from Equipment_Data  ed
+    left join equipment e on ed.equipmentId = e.id
+    where e.id = #{eId,jdbcType=INTEGER};
+  </delete>
+  
+  <!-- 根据节点id查询节点采集的数据 -->
+  <select id="selectEquipmentDataByeId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  	select * from Equipment_Data
+  	where equipmentId = #{id} 
+  	order by createTime desc limit 1
+  </select>
+  
+  <!-- 批量插入节点采集的数据 -->
+  <insert id="insert" parameterType="java.util.List" >
+  	<![CDATA[
+	  	insert into Equipment_Data (equipmentId, times, createTime)
+	    values
+	]]>
+	<foreach collection="list" item="item" index="index" separator="," >
+         (#{item.equipmentid}, #{item.times}, #{item.createtime})
+	</foreach>
+  </insert>
+  
+  <!-- 以年为单位，根据统计周期获取用水量 -->
+  <select id="getValueForYear" resultType="long" parameterType="Map">
+  	select CASE WHEN (max(ed.times)-min(ed.times)) IS NULL THEN 0 ELSE (max(ed.times)-min(ed.times)) END as val
+    from Equipment_Data ed
+    where ed.equipmentId = #{eId}
+    and DATE_FORMAT(ed.createTime,'%Y') = #{circleYear}
+  </select>
+  
+  <!-- 以月为单位，根据统计周期获取用水量 -->
+  <select id="getValueForMouth" resultType="long" parameterType="Map">
+  	select CASE WHEN (max(ed.times)-min(ed.times)) IS NULL THEN 0 ELSE (max(ed.times)-min(ed.times)) END as val
+    from Equipment_Data ed
+    where ed.equipmentId = #{eId}
+    and DATE_FORMAT(ed.createTime,'%Y-%m') = #{circleMouth}
+  </select>
+  
+  <!-- 查询节点采集的最新一条数据 -->
+  <select id="selectDataByEId" resultType="long" parameterType="Integer">
+  	select CASE WHEN (max(ed.times)) IS NULL THEN 0 ELSE (max(ed.times)) END as val
+    from Equipment_Data ed
+    where ed.equipmentId = #{id}
+  </select>
+  
+</mapper>

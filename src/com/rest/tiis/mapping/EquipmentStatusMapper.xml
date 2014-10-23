@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rest.tiis.mapping.EquipmentStatusMapper" >
+  <resultMap id="BaseResultMap" type="com.rest.tiis.beans.EquipmentStatus" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="equipmentId" property="equipmentid" jdbcType="INTEGER" />
+    <result column="airTemperatrue" property="airtemperatrue" jdbcType="REAL" />
+    <result column="airHumidity" property="airhumidity" jdbcType="INTEGER" />
+    <result column="soilTemperatrue" property="soiltemperatrue" jdbcType="REAL" />
+    <result column="soilHumidity" property="soilhumidity" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, equipmentId, airTemperatrue, airHumidity, soilTemperatrue, soilHumidity, createTime, 
+    status
+  </sql>
+  
+  <!-- 根据项目id删除所有节点状态数据 -->
+  <delete id="deleteEquipmentStatus" parameterType="java.lang.Integer" >
+    delete es from Equipment_Status  es
+    left join equipment e on es.equipmentId = e.id
+    left join ControlHost c on e.controlHostId = c.id
+    where c.projectId = #{pId,jdbcType=INTEGER};
+  </delete>
+  
+  <!-- 根据主机id删除所有节点状态数据 -->
+  <delete id="deleteEquipmentStatusByHostId" parameterType="java.lang.Integer" >
+    delete es from Equipment_Status  es
+    left join equipment e on es.equipmentId = e.id
+    left join ControlHost c on e.controlHostId = c.id
+    where c.id = #{hId,jdbcType=INTEGER};
+  </delete>
+  
+  <!-- 根据节点id删除所有节点状态数据 -->
+  <delete id="deleteEquipmentStatusByEquipmentId" parameterType="java.lang.Integer" >
+    delete es from Equipment_Status  es
+    left join equipment e on es.equipmentId = e.id
+    where e.id = #{eId,jdbcType=INTEGER};
+  </delete>
+  
+</mapper>

@@ -1,0 +1,162 @@
+.loginTitle {
+	width: 100%;
+	height: 40px;
+	color: #fff;
+	background-color: #636363;
+}
+
+.span {
+	width: 80%;
+	font-size: 18px;
+	margin-left: 20px;
+	line-height: 40px;
+	float: left;
+}
+
+.close {
+	width: 40px;
+	height: 40px;
+	background-color: #454545;
+	float: right;
+	color: #fff;
+	text-align: center;
+	line-height: 40px;
+	cursor: pointer;
+}
+
+.closeForEquipment {
+	width: 40px;
+	height: 40px;
+	background-color: #454545;
+	float: right;
+	color: #fff;
+	text-align: center;
+	line-height: 40px;
+	cursor: pointer;
+}
+
+.context {
+	width: 98%;
+	height: 180px;
+	margin-left:3px;
+	line-height: 16px; font-size: 16px;
+}
+.projectList {
+	height:360px;
+}
+.projectItem {
+	margin-left: 20px;
+	margin-bottom: 5px;
+}
+
+.projectA {
+	font-size: 14px;
+	text-decoration: none;
+	font-weight: 700;
+}
+
+.projectInfo {
+	width: 450px;
+	height: 300px;
+	display: none;
+}
+
+.hostInfo {
+	width: 450px;
+	height: 300px;
+	display: none;
+}
+
+.equipmentInfo {
+	width: 650px;
+	height: 400px;
+	display: none;
+}
+
+.equipmentButton {
+	display: inline;
+	-moz-box-shadow: 0 1px 2px 0 #BC8F8F inset;
+	-webkit-box-shadow: 0 1px 2px 0 #BC8F8F inset;
+	box-shadow: 0 1px 2px 0 #BC8F8F inset;
+	width: 130px;
+	font-size: 18px;
+	margin-left: 20px;
+	height: 30px;
+	border: 1px solid #CD5B45;
+	background: -moz-linear-gradient(top, #ca6d6d 0%, #ba6d6d 100%);
+	background: -webkit-linear-gradient(top, #ca6d6d 0%, #ba6d6d 100%);
+	color: #fff;
+}
+
+.equipmentButton1 {
+	display: inline;
+	-moz-box-shadow: 0 1px 2px 0 #BC8F8F inset;
+	-webkit-box-shadow: 0 1px 2px 0 #BC8F8F inset;
+	box-shadow: 0 1px 2px 0 #BC8F8F inset;
+	width: 130px;
+	font-size: 18px;
+	margin-left: 20px;
+	height: 30px;
+	border: 1px solid #CD5B45;
+	background: #CD5C5C;
+	color: #fff;
+}
+.timeLen {
+	width: 450px;
+	height: 300px;
+	display: none;
+}
+
+.model {
+	width: 450px;
+	height: 300px;
+	display: none;
+}
+.parameter {
+	width: 450px;
+	height: 300px;
+	display: none;
+}
+
+.btn {
+	width: 100%;
+	height: 45px;
+	margin-top: 5px;
+	}
+.pTitle {
+	height:40px;
+	text-align:center;
+	line-height:40px;
+	margin-top:3px;
+}
+
+.projectInfo .pTitle {
+	height: 35px;
+	text-align: center;
+	line-height: 35px;
+	margin-top: 0px;
+}
+.equipmentInfo .pTitle {
+	height: 30px;
+	text-align: center;
+	line-height: 30px;
+	margin-top: 0px;
+}
+
+.pTitle input {
+	padding-left:3px;
+	width:260px;
+	height:26px;
+	font-size:14px;
+	line-height:20px;
+	border:#c3c3c3 solid 1px ;
+}
+.equipmentInfo input {
+	height:24px;
+}
+.pTitle select {
+	width:130px;
+	height:35px;
+	font-size:16px;
+	line-height:16px;
+}

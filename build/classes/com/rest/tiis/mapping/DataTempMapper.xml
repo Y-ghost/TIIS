@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rest.tiis.mapping.DataTempMapper" >
+  <resultMap id="BaseResultMap" type="com.rest.tiis.beans.DataTemp" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="controlId" property="controlid" jdbcType="VARCHAR" />
+    <result column="dataContext" property="datacontext" jdbcType="VARCHAR" />
+    <result column="ReceiveTime" property="receivetime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, address, controlId, dataContext, ReceiveTime
+  </sql>
+  <!-- 等待返回指令 -->
+  <select id="selectDataTemp" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from Data_temp
+    where address = #{address} 
+    and controlId = #{controlId} 
+    and DATE_FORMAT(ReceiveTime,'%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT(#{startDate} ,'%Y-%m-%d %H:%i:%s')
+    and DATE_FORMAT(ReceiveTime,'%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> DATE_FORMAT(#{endDate} ,'%Y-%m-%d %H:%i:%s')
+  </select>
+  <!-- 获取最新的报警指令 -->
+  <select id="selectDataMax" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from Data_temp
+    where address = #{address} 
+    and controlId = #{controlId} 
+    order by ReceiveTime desc limit 1
+  </select>
+  <!-- 查询所有历史数据list -->
+  <select id="selectAllOldData" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from Data_temp
+    where DATE_FORMAT(ReceiveTime,'%Y-%m-%d') <![CDATA[<=]]> DATE_FORMAT(DATE_SUB(curdate(), INTERVAL 1 DAY) ,'%Y-%m-%d')
+  </select>
+  <!-- 将接受的指令存储到临时数据表中 -->
+  <insert id="insert" parameterType="com.rest.tiis.beans.DataTemp" >
+    insert into Data_temp ( address, controlId, 
+      dataContext, ReceiveTime)
+    values ( #{address,jdbcType=VARCHAR}, #{controlid,jdbcType=VARCHAR}, 
+      #{datacontext,jdbcType=VARCHAR}, #{receivetime,jdbcType=TIMESTAMP})
+  </insert>
+  <!-- 删除超过一天的历史数据 -->
+	<delete id = "deleteAllOldData" parameterType = "java.util.List">
+		<![CDATA[ delete from Data_temp where id in ]]>
+			<foreach collection="list" item = "model" open="(" separator="," close=")">
+          		#{ model.id}
+        	</foreach>
+	</delete>
+      
+</mapper>

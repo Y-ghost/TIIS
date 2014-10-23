@@ -1,0 +1,103 @@
+.main {
+	min-height: 600px;
+	margin: 0px auto;
+}
+
+.maincontent {
+	width: 900px;
+	min-height: 600px;
+	margin-left: 16%;
+	position: absolute;
+}
+
+.left {
+	float: left;
+	width: 450px;
+	height: 400px;
+	margin-right: 10px;
+	padding-top: 150px;
+}
+
+.right {
+	float: left;
+	width: 400px;
+	height: 400px;
+	margin-right: 10px;
+	padding-top: 150px;
+}
+
+.rightContext {
+	float: left;
+	width: 400px;
+	height: 300px;
+	margin-right: 10px;
+	border: #B0B0B0 solid 1px;
+}
+
+.login {
+	text-align: center;
+	font-size: 22px;
+	font-weight: 700;
+	padding-top: 20px;
+	height: 40px;
+	margin: 0px auto;
+	color:#0A0A0A;
+}
+
+.content {
+	height: 300px;
+	width: 400px;
+	margin: 0px auto;
+	padding-left: 8px;
+}
+.content span{
+	color:red;
+}
+
+.bottom {
+	width: 450px;
+	height: 60px;
+	margin: 0px auto;
+}
+
+.username {
+	width: 95%;
+	height: 40px;
+	border: #B0B0B0 solid 1px;
+}
+
+.password {
+	width: 95%;
+	height: 40px;
+	border: #B0B0B0 solid 1px;
+}
+
+.resetPassword {
+	width: 95%;
+	height: 40px;
+	border: #B0B0B0 solid 1px;
+}
+
+.loginBtn {
+	width: 95%;
+	height: 40px;
+	margin-top: 20px;
+	font-size: 20px;
+	font-weight: 700;
+	background-color: #B35D5D;
+	color: #fff;
+}
+
+.register {
+	width: 95%;
+	height: 40px;
+	margin-top: 20px;
+}
+
+input {
+	color: #B0B0B0;
+	padding-left: 3px;
+}
+a {
+	color:#00B2EE;	
+}

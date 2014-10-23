@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rest.tiis.mapping.ProjectMapper" >
+  <resultMap id="BaseResultMap" type="com.rest.tiis.beans.Project" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="DOUBLE" />
+    <result column="department" property="department" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="county" property="county" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="createUser" property="createuser" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="modifyUser" property="modifyuser" jdbcType="INTEGER" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, area, department, city, province, county, address, createUser, createTime, 
+    modifyUser, modifyTime
+  </sql>
+  <!-- 根据项目id查询项目 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from Project
+    where id = #{projectId,jdbcType=INTEGER}
+  </select>
+  <!-- 查询所有项目信息 -->
+  <select id="selectAllProject" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from Project
+  </select>
+  <!-- 查询所有项目信息数 -->
+  <select id="selectAllProjectCounts" resultType="Integer" parameterType="Map" >
+    select count(*) 
+    from Project
+    <if test="province !=null and province != ''">
+    	where province = #{province}
+    </if>  
+    <if test="city !=null and city != ''">
+    	and city = #{city}
+    </if>  
+  </select>
+  <!-- 查询用户关联的所有项目信息 -->
+  <select id="selectAllProjectByUser" resultMap="BaseResultMap" parameterType="Integer">
+    select 
+    <include refid="Base_Column_List" />
+    from Project where id in (select projectId from UserProjectRel where userId = #{id,jdbcType=INTEGER})
+  </select>
+  <!-- 查询用户关联的所有项目信息数 -->
+  <select id="selectAllProjectCountsByUser" resultType="Integer"  parameterType="Map">
+    select count(*) 
+    from Project where id in (select projectId from UserProjectRel where userId = #{id}) 
+    <if test="province !=null and province != ''">
+    	and province = #{province}
+    </if>  
+    <if test="city !=null and city != ''">
+    	and city = #{city}
+    </if>  
+  </select>
+  
+  <!-- 分页查询所有项目信息 -->
+  <select id="selectAllProjectPages" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from Project
+    <if test="province !=null and province != ''">
+    	where province = #{province}
+    </if>  
+    <if test="city !=null and city != ''">
+    	and city = #{city}
+    </if>  
+    order by createTime desc limit #{index,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 分页查询用户关联的所有项目信息 -->
+  <select id="selectAllProjectPagesByUser" resultMap="BaseResultMap" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from Project where id in (select projectId from UserProjectRel where userId = #{id})
+    <if test="province !=null and province != ''">
+    	and province = #{province}
+    </if>  
+    <if test="city !=null and city != ''">
+    	and city = #{city}
+    </if>  
+    order by createTime desc limit #{index,jdbcType=INTEGER} , #{pageSize,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 根据项目名称查询项目信息 -->
+  <select id="selectProjectByName" resultMap="BaseResultMap" parameterType="String">
+    select 
+    <include refid="Base_Column_List" />
+    from Project where name = #{pName,jdbcType=VARCHAR}
+  </select>
+  <!-- 根据项目名称查询项目信息 -->
+  <select id="selectProjectByIdAndName" resultMap="BaseResultMap" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from Project where id <![CDATA[ != ]]> #{id,jdbcType=INTEGER} and name = #{pName,jdbcType=VARCHAR}
+  </select>
+  <!-- 添加新项目信息 -->
+  <insert id="insert" parameterType="com.rest.tiis.beans.Project">
+    insert into Project (name, area, 
+      department, city, province, 
+      county, address, createUser, 
+      createTime, modifyUser, modifyTime
+      )
+    values ( #{name,jdbcType=VARCHAR}, #{area,jdbcType=DOUBLE}, 
+      #{department,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, 
+      #{county,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{createuser,jdbcType=INTEGER}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{modifyuser,jdbcType=INTEGER}, #{modifytime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <!-- 删除一个项目 -->
+  <delete id="deleteProjectById" parameterType="java.lang.Integer" >
+    delete from Project
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 更新项目信息 -->
+  <update id="modifyProject" parameterType="com.rest.tiis.beans.Project" >
+    update Project
+    set name = #{name,jdbcType=VARCHAR},
+      area = #{area,jdbcType=DOUBLE},
+      department = #{department,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      modifyUser = #{modifyuser,jdbcType=INTEGER},
+      modifyTime = #{modifytime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
